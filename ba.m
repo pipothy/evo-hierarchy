@@ -6,8 +6,8 @@ function best = ba( its )
 dimensions = 3;
 population = 20;
 iterations = its;
-loudness = 0.95;
-pulserate = 0.1;
+loudness = 0.5;
+pulserate = 0.5;
 qmin = 0;
 qmax = 2;
 fitness = zeros(population,1);
@@ -24,6 +24,7 @@ for i = 1:population
 end
 dir = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
 mkdir(dir);
+fname = strcat('C:\Users\Ben\Documents\MATLAB\',dir);
 
 function fitness = runtrial(bat)
     fitness = sqrt((bat(1))^2) + sqrt((bat(2))^2) + sqrt((bat(3))^2);
@@ -63,7 +64,6 @@ for k = 1:iterations
     %disp('Start of loop')
     for i = 1:population
         velocity(i,:) = velocity(i,:) + (solutions(i,:) - solutions(best,:))*q(i);
-        disp(velocity)
         tempsol(i,:) = solutions(i,:) + velocity(i,:);
             %disp(tempsol(i,j))
         for j = 1:dimensions
@@ -109,13 +109,25 @@ for k = 1:iterations
     scaledfit = fitness - min(fitness);
     scaledfit = scaledfit / max(scaledfit);
     graph = scatter3(x,y,z,[],scaledfit,'filled');
+    %xlim([-20 20]);
+    %ylim([-20 20]);
+    %zlim([-20 20]);
     colorbar
     file = int2str(k);
     name = '.png';
     filename = strcat(file,name);
-    fname = strcat('C:\Users\Ben\Documents\MATLAB\',dir);
     saveas(graph, fullfile(fname, filename));
 end
+info = fopen(fullfile(fname,'info.txt'), 'w');
+dimensions = strcat('Dimensions: ',string(dimensions));
+population = strcat('Population: ',string(population));
+iterations = strcat('iterations: ',string(iterations));
+loudness = strcat('Loudness: ',string(loudness));
+pulserate = strcat('Pulse Rate: ',string(pulserate));
+qminmax = strcat('Qmin to Qmax: ',string(qmin), ' - ', string(qmax));
+lower = strcat('lower bounds: ', string(lower));
+upper = strcat('upper bounds: ', string(upper));
+fprintf(info,'%s\r\n','Bat Algorithm. Parameters:', dimensions, population, iterations, loudness, pulserate, qminmax, lower, upper);
 best = solutions(best,:);
 end
 
